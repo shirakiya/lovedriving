@@ -7,7 +7,7 @@ use Furl;
 use JSON qw/decode_json/;
 use Model::Request;
 
-sub calc {
+sub get_discomfort {
     args(
         my $class,
         my $id => 'Int',

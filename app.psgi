@@ -34,7 +34,7 @@ get '/' => sub {
 post '/' => sub {
     my $c = shift;
     my $id = $c->req->param('id');
-    my $res_json = Model::Calc->calc(
+    my $res_json = Model::Calc->get_discomfort(
         'id' => $id,
     );
 

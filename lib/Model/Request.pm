@@ -6,12 +6,12 @@ use Furl;
 use JSON qw/decode_json/;
 use File::Spec;
 use File::Basename;
+use Data::Dumper;
 
 sub vehicle_info {
     args(
         my $class,
         my $id => 'Int',
-        my $developer_key => 'Str',
     );
 
     my $furl = Furl->new;
@@ -20,7 +20,7 @@ sub vehicle_info {
 		'Content-Type: application/x-www-form-urlencoded',
     ];
     my $res = $furl->post( $url, $header, [
-        developerkey => &_get_developer_key,
+        developerkey => $class->_get_developer_key,
         responseformat => 'json',
         userid => 'ITCJP_USERID_001',
         infoids => '[Spd,BrkIndcr]',
@@ -34,11 +34,11 @@ sub vehicle_info {
 
 
 sub _get_developer_key {
-    my $basedir = File::Spec->rel2abs( File::Spec->catdir( dirname(__FILE__) ) );
+    my $basedir = File::Spec->rel2abs( File::Spec->catdir( dirname(__FILE__), '../../' ) );
     my $config = do File::Spec->catfile( $basedir, 'config.pl' )
       or die;
-    
-    return $config->{developerkey};
+
+    return $config->{developer_key};
 }
 
 1;
