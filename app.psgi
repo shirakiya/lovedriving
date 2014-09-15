@@ -20,9 +20,10 @@ sub load_config {
     my $basedir = File::Spec->rel2abs( File::Spec->catdir( dirname(__FILE__) ) );
     my $config = do File::Spec->catfile( $basedir, 'config.pl' )
       or die;
-
-  return $config;
+    
+    return $config;
 }
+
 
 # Routing
 get '/' => sub {
@@ -33,13 +34,15 @@ get '/' => sub {
 post '/' => sub {
     my $c = shift;
     my $id = $c->req->param('id');
-    my $value = Model::Calc->calc( 'id' => $id );
+    my $res_json = Model::Calc->calc(
+        'id' => $id,
+    );
 
-    #$c->config->{developer_key}
     return $c->render_json({
-        foo => $value,
+        foo => $id,
     });
 };
+
 
 # load plugins
 __PACKAGE__->load_plugin(
@@ -52,6 +55,7 @@ __PACKAGE__->load_plugin(
 );
 __PACKAGE__->enable_session();
 __PACKAGE__->to_app(handle_static => 1);
+
 
 __DATA__
 

@@ -3,6 +3,9 @@ use strict;
 use warnings;
 use Smart::Args;
 use UnQLite;
+use Furl;
+use JSON qw/decode_json/;
+use Model::Request;
 
 sub calc {
     args(
@@ -10,11 +13,15 @@ sub calc {
         my $id => 'Int',
     );
 
-    my $db = UnQLite->open('lovedriving.db');
-    $db->kv_store( $id, 10 );
-    my $value = $db->kv_fetch( $id );
+    my $res = Model::Request->vehicle_info(
+        id => $id,
+    );
 
-    return $value;
+    #my $db = UnQLite->open('lovedriving.db');
+    #$db->kv_store( $id, 10 );
+    #my $value = $db->kv_fetch( $id );
+
+    return $res;
 }
 
 1;
