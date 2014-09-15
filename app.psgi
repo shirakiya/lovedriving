@@ -7,6 +7,7 @@ use lib File::Spec->catdir(dirname(__FILE__), 'extlib', 'lib', 'perl5');
 use lib File::Spec->catdir(dirname(__FILE__), 'lib');
 use Amon2::Lite;
 use Model::Calc;
+use Model::Request;
 
 our $VERSION = '0.13';
 
@@ -31,15 +32,28 @@ get '/' => sub {
     return $c->render('index.tt');
 };
 
+
 post '/' => sub {
     my $c = shift;
     my $id = $c->req->param('id');
-    my $res_json = Model::Calc->get_discomfort(
-        'id' => $id,
+
+    # 走行情報の取得
+    my $content = Model::Request->vehicle_info( id => $id );
+
+    # 不快指数の取得
+    my $discomfort = Model::Calc->get_discomfort(
+        id      => $id,
+        content => $content,
+    );
+
+    # 停車判定の取得
+    my $is_stop = Model::Calc->get_is_stop(
+        content => $content,
     );
 
     return $c->render_json({
-        foo => $id,
+        discomfort => $discomfort,
+        is_stop    => $is_stop,
     });
 };
 
