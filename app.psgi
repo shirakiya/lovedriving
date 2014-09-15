@@ -6,6 +6,7 @@ use File::Basename;
 use lib File::Spec->catdir(dirname(__FILE__), 'extlib', 'lib', 'perl5');
 use lib File::Spec->catdir(dirname(__FILE__), 'lib');
 use Amon2::Lite;
+use Model::Calc;
 
 our $VERSION = '0.13';
 
@@ -15,30 +16,41 @@ sub load_config {
 
     my $mode = $c->mode_name || 'development';
 
-    +{
-        'DBI' => [
-            "dbi:SQLite:dbname=$mode.db",
-            '',
-            '',
-        ],
-    }
+    # 設定ファイルの読み込み
+    my $basedir = File::Spec->rel2abs( File::Spec->catdir( dirname(__FILE__) ) );
+    my $config = do File::Spec->catfile( $basedir, 'config.pl' )
+      or die;
+
+  return $config;
 }
 
+# Routing
 get '/' => sub {
     my $c = shift;
     return $c->render('index.tt');
 };
 
+post '/' => sub {
+    my $c = shift;
+    my $id = $c->req->param('id');
+    my $value = Model::Calc->calc( 'id' => $id );
+
+    #$c->config->{developer_key}
+    return $c->render_json({
+        foo => $value,
+    });
+};
+
 # load plugins
-__PACKAGE__->load_plugin('Web::CSRFDefender' => {
-    post_only => 1,
-});
-# __PACKAGE__->load_plugin('DBI');
-# __PACKAGE__->load_plugin('Web::FillInFormLite');
-# __PACKAGE__->load_plugin('Web::JSON');
-
+__PACKAGE__->load_plugin(
+    'Web::CSRFDefender' => {
+        post_only => 1,
+    },
+);
+__PACKAGE__->load_plugin(
+    'Web::JSON',
+);
 __PACKAGE__->enable_session();
-
 __PACKAGE__->to_app(handle_static => 1);
 
 __DATA__
@@ -48,7 +60,7 @@ __DATA__
 <html>
 <head>
     <meta charset="utf-8">
-    <title>app</title>
+    <title>lovedriving</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="[% uri_for('/static/js/main.js') %]"></script>
@@ -58,11 +70,12 @@ __DATA__
 </head>
 <body>
     <div class="container">
-        <header><h1>app</h1></header>
         <section class="row">
-            This is a app
+            <form method="post" action="[% uri_for('/') %]">
+                <p>ID：<input type="text" id="id" name="id"></p>
+                <p><input type="submit" value="送信"></p>
+            </form>
         </section>
-        <footer>Powered by <a href="http://amon.64p.org/">Amon2::Lite</a></footer>
     </div>
 </body>
 </html>
