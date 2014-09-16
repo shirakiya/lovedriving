@@ -58,6 +58,30 @@ post '/' => sub {
 };
 
 
+post '/start' => sub {
+    my $c = shift;
+    my $id = $c->req->param('id');
+
+    my $is_start = Model::Calc->start( id => $id );
+
+    return $c->render_json({
+        is_start => $is_start,
+    });
+};
+
+
+post '/end' => sub {
+    my $c = shift;
+    my $id = $c->req->param('id');
+
+    my $is_end = Model::Calc->end( id => $id );
+
+    return $c->render_json({
+        is_end => $is_end,
+    });
+};
+
+
 # load plugins
 __PACKAGE__->load_plugin(
     'Web::CSRFDefender' => {
@@ -89,7 +113,7 @@ __DATA__
 <body>
     <div class="container">
         <section class="row">
-            <form method="post" action="[% uri_for('/') %]">
+            <form method="post" action="[% uri_for('/end') %]">
                 <p>ID：<input type="text" id="id" name="id"></p>
                 <p><input type="submit" value="送信"></p>
             </form>

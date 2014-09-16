@@ -2,7 +2,19 @@ package Model::Calc;
 use strict;
 use warnings;
 use Smart::Args;
-use UnQLite;
+use Model::KV;
+
+sub start {
+    args(
+        my $class,
+        my $id => 'Str',
+    );
+
+    my $is_start = Model::KV->start( id => $id );
+
+    return $is_start;
+}
+
 
 sub get_discomfort {
     args(
@@ -11,14 +23,16 @@ sub get_discomfort {
         my $content,
     );
 
-    my $db = UnQLite->open('lovedriving.db');
-    my $sum_discomfort = $db->kv_fetch( $id ) or 0;
+    my $sum_discomfort = Model::KV->get_discomfort( id => $id );
 
     #TODO 不快指数の計算
     my $discomfort = 0; #仮実装
     $sum_discomfort += $discomfort;
 
-    $db->kv_store( $id, $sum_discomfort );
+    my $is_save = Model::KV->save_discomfort(
+        id         => $id,
+        discomfort => $sum_discomfort,
+    );
 
     return $sum_discomfort;
 }
@@ -40,6 +54,18 @@ sub get_is_stop {
     }
 
     return $is_stop;
+}
+
+
+sub end {
+    args(
+        my $class,
+        my $id => 'Str',
+    );
+
+    my $is_end = Model::KV->end( id => $id );
+
+    return $is_end;
 }
 
 
