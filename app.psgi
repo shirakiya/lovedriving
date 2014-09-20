@@ -6,10 +6,10 @@ use File::Basename;
 use lib File::Spec->catdir(dirname(__FILE__), 'extlib', 'lib', 'perl5');
 use lib File::Spec->catdir(dirname(__FILE__), 'lib');
 use Amon2::Lite;
-use Model::Calc;
-use Model::Request;
+use LoveDriving::Calc;
+use LoveDriving::Request;
 
-our $VERSION = '0.13';
+our $VERSION = '0.01';
 
 # put your configuration here
 sub load_config {
@@ -38,16 +38,16 @@ post '/' => sub {
     my $id = $c->req->param('id');
 
     # 走行情報の取得
-    my $content = Model::Request->vehicle_info( id => $id );
+    my $content = LoveDriving::Request->vehicle_info( id => $id );
 
     # 不快指数の取得
-    my $discomfort = Model::Calc->get_discomfort(
+    my $discomfort = LoveDriving::Calc->get_discomfort(
         id      => $id,
         content => $content,
     );
 
     # 停車判定の取得
-    my $is_stop = Model::Calc->get_is_stop(
+    my $is_stop = LoveDriving::Calc->get_is_stop(
         content => $content,
     );
 
@@ -74,7 +74,7 @@ post '/end' => sub {
     my $c = shift;
     my $id = $c->req->param('id');
 
-    my $is_end = Model::Calc->end( id => $id );
+    my $is_end = LoveDriving::Calc->end( id => $id );
 
     return $c->render_json({
         is_end => $is_end,
@@ -113,7 +113,7 @@ __DATA__
 <body>
     <div class="container">
         <section class="row">
-            <form method="post" action="[% uri_for('/end') %]">
+            <form method="post" action="[% uri_for('/') %]">
                 <p>ID：<input type="text" id="id" name="id"></p>
                 <p><input type="submit" value="送信"></p>
             </form>

@@ -1,8 +1,8 @@
-package Model::Calc;
+package LoveDriving::Calc;
 use strict;
 use warnings;
 use Smart::Args;
-use Model::KV;
+use LoveDriving::KV;
 
 sub start {
     args(
