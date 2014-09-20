@@ -7,12 +7,11 @@ use LoveDriving::KV;
 sub start {
     args(
         my $class,
-        my $id => 'Str',
     );
 
-    my $is_start = Model::KV->start( id => $id );
+    my $start_res = LoveDriving::KV->start();
 
-    return $is_start;
+    return $start_res;
 }
 
 
@@ -23,13 +22,13 @@ sub get_discomfort {
         my $content,
     );
 
-    my $sum_discomfort = Model::KV->get_discomfort( id => $id );
+    my $sum_discomfort = LoveDriving::KV->get_discomfort( id => $id );
 
     #TODO 不快指数の計算
     my $discomfort = 0; #仮実装
     $sum_discomfort += $discomfort;
 
-    my $is_save = Model::KV->save_discomfort(
+    my $is_save = LoveDriving::KV->save_discomfort(
         id         => $id,
         discomfort => $sum_discomfort,
     );
@@ -63,7 +62,7 @@ sub end {
         my $id => 'Str',
     );
 
-    my $is_end = Model::KV->end( id => $id );
+    my $is_end = LoveDriving::KV->end( id => $id );
 
     return $is_end;
 }

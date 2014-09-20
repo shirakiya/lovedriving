@@ -19,21 +19,33 @@ sub load_config {
 
     # 設定ファイルの読み込み
     my $basedir = File::Spec->rel2abs( File::Spec->catdir( dirname(__FILE__) ) );
-    my $config = do File::Spec->catfile( $basedir, 'config.pl' )
-      or die;
+    my $config = do File::Spec->catfile( $basedir, 'config.pl' );
     
     return $config;
 }
 
 
 # Routing
+post '/start' => sub {
+    my $c = shift;
+
+    # id、彼女不快指数の取得
+    my $start_res = LoveDriving::Calc->start;
+
+    return $c->render_json({
+        id         => $start_res->{id},
+        discomfort => $start_res->{discomfort},
+    });
+};
+
+
 get '/' => sub {
     my $c = shift;
     return $c->render('index.tt');
 };
 
 
-post '/' => sub {
+post '/vehicleinfo' => sub {
     my $c = shift;
     my $id = $c->req->param('id');
 
@@ -58,18 +70,6 @@ post '/' => sub {
 };
 
 
-post '/start' => sub {
-    my $c = shift;
-    my $id = $c->req->param('id');
-
-    my $is_start = Model::Calc->start( id => $id );
-
-    return $c->render_json({
-        is_start => $is_start,
-    });
-};
-
-
 post '/end' => sub {
     my $c = shift;
     my $id = $c->req->param('id');
@@ -84,14 +84,8 @@ post '/end' => sub {
 
 # load plugins
 __PACKAGE__->load_plugin(
-    'Web::CSRFDefender' => {
-        post_only => 1,
-    },
-);
-__PACKAGE__->load_plugin(
     'Web::JSON',
 );
-__PACKAGE__->enable_session();
 __PACKAGE__->to_app(handle_static => 1);
 
 
@@ -113,7 +107,7 @@ __DATA__
 <body>
     <div class="container">
         <section class="row">
-            <form method="post" action="[% uri_for('/') %]">
+            <form method="post" action="[% uri_for('/vehicleinfo') %]">
                 <p>ID：<input type="text" id="id" name="id"></p>
                 <p><input type="submit" value="送信"></p>
             </form>
