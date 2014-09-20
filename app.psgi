@@ -53,7 +53,7 @@ post '/vehicleinfo' => sub {
     my $content = LoveDriving::Request->vehicle_info( id => $id );
 
     # 不快指数の取得
-    my $discomfort = LoveDriving::Calc->get_discomfort(
+    my $drive_result = LoveDriving::Calc->get_drive_result(
         id      => $id,
         content => $content,
     );
@@ -68,8 +68,8 @@ post '/vehicleinfo' => sub {
     );
 
     return $c->render_json({
-        discomfort => $discomfort,
-        type       => 'brake',
+        discomfort => $drive_result->{total_discomfort},
+        type       => $drive_result->{discomfort_type},
         is_stop    => $is_stop,
         lat        => $position->{lat}.'',
         lon        => $position->{lon}.'',

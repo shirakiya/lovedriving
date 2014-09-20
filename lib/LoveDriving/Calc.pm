@@ -16,42 +16,72 @@ sub start {
 }
 
 
-sub get_discomfort {
+sub get_drive_result {
     args(
         my $class,
         my $id => 'Str',
         my $content,
     );
 
+    my $data = $class->_parse_data( $content );
+    # 走行状況の計算結果の取得
+    my $discomfort_result = $class->_calc_discomfort( $data );
+
+    # 彼女不快指数の合計算出
     my $total_discomfort = LoveDriving::KV->get_discomfort( id => $id );
+    $total_discomfort -= $discomfort_result->{reduce_value};
 
-    #TODO 不快指数の計算
-    my $discomfort = 0; #仮実装
-    $total_discomfort -= $discomfort;
-
+    # 彼女不快指数の保存
     my $is_save = LoveDriving::KV->save_discomfort(
         id         => $id,
         discomfort => $total_discomfort,
     );
 
-    return $total_discomfort;
+    return {
+        total_discomfort => $total_discomfort,
+        discomfort_type  => $discomfort_result->{discomfort_type},
+    };
 }
 
-
+# 減算される彼女不快指数を取得する
 sub _calc_discomfort {
-    my ($class, $content) = @_;
+    my ( $class, $data ) = @_;
 
-    my $data = $class->_parse_data( $content );
     my $reduce_value = 0;
+    my $discomfort_type = {
+        brake_flag => 0,
+        curve_flag => 0,
+    };
+
+    # 急ブレーキの計算結果
+    my $brake_value = $class->_get_brake_discomfort( $data );
+    if ( $brake_value > 0 ) {
+        $discomfort_type->{brake_flag} = 1;
+    }
+    $reduce_value += $brake_value;
+
+    #TODO 急カーブの計算結果
+
+    return {
+        reduce_value    => $reduce_value,
+        discomfort_type => $discomfort_type,
+    }
+}
+
+# 急ブレーキによる不快指数を計算する
+sub _get_brake_discomfort {
+    my ( $class, $data ) = @_;
 
     my $brake_value = 0;
-
-    my $ALgt = $data->{ALgt};
-    my $vehicle_g = $ALgt / config()->{accela_gravity};
+    # 車両の前後G
+    my $vehicle_g = $data->{ALgt} / config()->{accela_gravity};
 
     # 加速度が超えていた場合
-    if ( $vehicle_g < config()->{g_threshold} ) {
+    if ( $vehicle_g > config()->{g_threshold} ) {
+        $brake_value = config->{reduce_value};
     }
+
+    return $brake_value;
 }
 
 
