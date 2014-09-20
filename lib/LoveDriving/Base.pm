@@ -4,6 +4,7 @@ use warnings;
 use utf8;
 use File::Spec;
 use File::Basename;
+use UnQLite;
 
 use parent 'Exporter';
 our @EXPORT = qw/ config unqlite /;

@@ -2,7 +2,6 @@ package LoveDriving::KV;
 use strict;
 use warnings;
 use Smart::Args;
-use UnQLite;
 use Try::Tiny;
 use LoveDriving::Base;
 
@@ -10,9 +9,24 @@ sub start {
     args(
         my $class,
     );
+
+    my $user_id = '';
+    #一意なIDを与える
+    for my $id ( @{config()->{userid}} ) {
+        if ( defined( unqlite()->kv_fetch( $id ) ) ) {
+            next;
+        } else {
+            $user_id = $id;
+            last;
+        }
+    }
+
+    #不快指数の初期値100を与える
+    unqlite()->kv_store( $user_id, 100 );
+
     my $start_res = {
-        id => '001',
-        discomfort => 100,
+        id => $user_id,
+        discomfort => unqlite()->kv_fetch( $user_id ),
     };
     return $start_res;
 }

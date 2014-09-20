@@ -107,7 +107,7 @@ __DATA__
 <body>
     <div class="container">
         <section class="row">
-            <form method="post" action="[% uri_for('/start') %]">
+            <form method="post" action="[% uri_for('/vehicleinfo') %]">
                 <p>ID：<input type="text" id="id" name="id"></p>
                 <p><input type="submit" value="送信"></p>
             </form>
