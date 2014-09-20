@@ -68,9 +68,9 @@ post '/vehicleinfo' => sub {
     );
 
     return $c->render_json({
-        discomfort => $drive_result->{total_discomfort},
-        type       => $drive_result->{discomfort_type},
-        is_stop    => $is_stop,
+        discomfort => $drive_result->{total_discomfort}.'',
+        type       => $drive_result->{discomfort_type}.'',
+        is_stop    => $is_stop.'',
         lat        => $position->{lat}.'',
         lon        => $position->{lon}.'',
         data       => $content->{vehicleinfo}[0]->{data}[0], #TODO 完成したら削除

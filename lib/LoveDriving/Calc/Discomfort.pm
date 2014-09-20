@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Smart::Args;
 use LoveDriving::Base;
+use Data::Dumper;
 
 # 減算される彼女不快指数を取得する
 sub get_reduce_value {
@@ -13,10 +14,10 @@ sub get_reduce_value {
 
     my $reduce_value = 0;
     my $discomfort_type = {
-        brake_flag       => '0',
-        jumpstart_flag   => '0',
-        stopbrake_flag   => '0',
-        curve_flag       => '0',
+        brake_flag       => 0,
+        jumpstart_flag   => 0,
+        stopbrake_flag   => 0,
+        curve_flag       => 0,
     };
 
     # 急加速度の計算結果
@@ -26,9 +27,9 @@ sub get_reduce_value {
         $reduce_value += $accela_result->{accela_discomfort};
 
         if ( $accela_result->{accela_type} == config()->{brake_flag} ) {
-            $discomfort_type->{brake_flag} = '1';
+            $discomfort_type->{brake_flag} = config()->{brake_flag};
         } elsif ( $accela_result->{accela_type} == config()->{jumpstart_flag} ) {
-            $discomfort_type->{jumpstart_flag} = '1';
+            $discomfort_type->{jumpstart_flag} = config()->{jumpstart_flag};
         }
     }
 
@@ -37,7 +38,7 @@ sub get_reduce_value {
 
     if ( $stopbrake_discomfort > 0 ) {
         $reduce_value += $stopbrake_discomfort;
-        $discomfort_type->{stopbrake_flag} = '1';
+        $discomfort_type->{stopbrake_flag} = config()->{stopbrake_flag};
     }
 
     #TODO 急カーブの計算結果
@@ -45,10 +46,14 @@ sub get_reduce_value {
 
     if ( $curve_discomfort > 0 ) {
         $reduce_value += $curve_discomfort;
-        $discomfort_type->{curve_flag} = '1';
+        $discomfort_type->{curve_flag} = config()->{curve_flag};
     }
 
     #TODO 蛇行運転の計算結果
+
+
+    # フラグの選択
+    $discomfort_type = $class->_choice_flags( $discomfort_type );
 
     return {
         reduce_value    => $reduce_value,
@@ -115,5 +120,14 @@ sub _get_curve_discomfort {
     return $curve_discomfort;
 }
 
+# フラグの選択
+sub _choice_flags {
+    my ( $class, $type ) = @_;
+
+    my @flags = sort { $a <=> $b } values( %$type );
+    my $discomfort_type = pop( @flags );
+
+    return $discomfort_type;
+}
 
 1;
