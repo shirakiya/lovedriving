@@ -31,6 +31,8 @@ sub get_drive_result {
     # 彼女不快指数の合計算出
     my $total_discomfort = LoveDriving::KV->get_discomfort( id => $id );
     $total_discomfort -= $discomfort_result->{reduce_value};
+    # 0以下の場合は0を与える
+    $total_discomfort < 0 and $total_discomfort = 0;
 
     # 彼女不快指数の保存
     my $is_save = LoveDriving::KV->save_discomfort(
