@@ -2,9 +2,10 @@ package LoveDriving::Calc;
 use strict;
 use warnings;
 use Smart::Args;
-use LoveDriving::Base;
+use LoveDriving::Calc::Discomfort;
 use LoveDriving::KV;
 
+# 開始処理
 sub start {
     args(
         my $class,
@@ -25,7 +26,7 @@ sub get_drive_result {
 
     my $data = $class->_parse_data( $content );
     # 走行状況の計算結果の取得
-    my $discomfort_result = $class->_calc_discomfort( $data );
+    my $discomfort_result = LoveDriving::Calc::Discomfort->get_reduce_value( data => $data );
 
     # 彼女不快指数の合計算出
     my $total_discomfort = LoveDriving::KV->get_discomfort( id => $id );
@@ -43,48 +44,8 @@ sub get_drive_result {
     };
 }
 
-# 減算される彼女不快指数を取得する
-sub _calc_discomfort {
-    my ( $class, $data ) = @_;
 
-    my $reduce_value = 0;
-    my $discomfort_type = {
-        brake_flag => 0,
-        curve_flag => 0,
-    };
-
-    # 急ブレーキの計算結果
-    my $brake_value = $class->_get_brake_discomfort( $data );
-    if ( $brake_value > 0 ) {
-        $discomfort_type->{brake_flag} = 1;
-    }
-    $reduce_value += $brake_value;
-
-    #TODO 急カーブの計算結果
-
-    return {
-        reduce_value    => $reduce_value,
-        discomfort_type => $discomfort_type,
-    }
-}
-
-# 急ブレーキによる不快指数を計算する
-sub _get_brake_discomfort {
-    my ( $class, $data ) = @_;
-
-    my $brake_value = 0;
-    # 車両の前後G
-    my $vehicle_g = $data->{ALgt} / config()->{accela_gravity};
-
-    # 加速度が超えていた場合
-    if ( $vehicle_g > config()->{g_threshold} ) {
-        $brake_value = config->{reduce_value};
-    }
-
-    return $brake_value;
-}
-
-
+# 車両の停止判定
 sub get_is_stop {
     args(
         my $class,
@@ -104,6 +65,7 @@ sub get_is_stop {
 }
 
 
+# 緯度経度のパース
 sub parse_position {
     args(
         my $class,
@@ -117,6 +79,7 @@ sub parse_position {
 }
 
 
+# 終了処理
 sub end {
     args(
         my $class,
