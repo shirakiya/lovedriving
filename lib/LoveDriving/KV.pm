@@ -52,13 +52,16 @@ sub save_discomfort {
         my $id         => 'Str',
         my $discomfort => 'Int',
     );
+
     my $is_save = 0;
+
     try {
         unqlite()->kv_store( $id, $discomfort );
         $is_save = 1;
     } catch {
         $is_save = 0;
     };
+
     return $is_save;
 }
 

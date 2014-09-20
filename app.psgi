@@ -73,6 +73,7 @@ post '/vehicleinfo' => sub {
         is_stop    => $is_stop,
         lat        => $position->{lat}.'',
         lon        => $position->{lon}.'',
+        data       => $content->{vehicleinfo}[0]->{data}[0], #TODO 完成したら削除
     });
 };
 
@@ -115,8 +116,22 @@ __DATA__
 <body>
     <div class="container">
         <section class="row">
+            <form method="post" action="[% uri_for('/start') %]">
+                <p>/start</p>
+                <p><input type="submit" value="送信"></p>
+            </form>
+        </section>
+        <hr>
+        <section class="row">
             <form method="post" action="[% uri_for('/vehicleinfo') %]">
-                <p>ID：<input type="text" id="id" name="id"></p>
+                <p>vehicleinfo：<input type="text" id="id" name="id"></p>
+                <p><input type="submit" value="送信"></p>
+            </form>
+        </section>
+        <hr>
+        <section class="row">
+            <form method="post" action="[% uri_for('/end') %]">
+                <p>end：<input type="text" id="id" name="id"></p>
                 <p><input type="submit" value="送信"></p>
             </form>
         </section>

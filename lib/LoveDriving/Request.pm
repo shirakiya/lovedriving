@@ -22,7 +22,8 @@ sub vehicle_info {
         developerkey   => config()->{developer_key},
         responseformat => 'json',
         vid            => "ITCJP_$id",
-        infoids        => '[Posn,Spd,ALgt,BrkIndcr]',
+        infoids        => '[Posn,Spd,ALat,ALgt,AccrPedlRat,BrkIndcr,SteerAg]',
+        #searchtime     => '2014-09-20 08:00:00',
     ] );
     die $res->status_line unless $res->is_success;
     print Dumper decode_json($res->content);

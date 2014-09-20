@@ -13,9 +13,10 @@ sub get_reduce_value {
 
     my $reduce_value = 0;
     my $discomfort_type = {
-        brake_flag       => 0,
-        jump_start_flag  => 0,
-        curve_flag       => 0,
+        brake_flag       => '0',
+        jumpstart_flag   => '0',
+        stopbrake_flag   => '0',
+        curve_flag       => '0',
     };
 
     # 急加速度の計算結果
@@ -25,14 +26,29 @@ sub get_reduce_value {
         $reduce_value += $accela_result->{accela_discomfort};
 
         if ( $accela_result->{accela_type} == config()->{brake_flag} ) {
-            $discomfort_type->{brake_flag} = 1;
-        } elsif ( $accela_result->{accela_type} == config()->{jamp_start_flag} ) {
-            $discomfort_type->{jump_start_flag} = 1;
+            $discomfort_type->{brake_flag} = '1';
+        } elsif ( $accela_result->{accela_type} == config()->{jumpstart_flag} ) {
+            $discomfort_type->{jumpstart_flag} = '1';
         }
     }
 
+    # 停車前のブレーキの計算結果
+    my $stopbrake_discomfort = $class->_get_stopbrake_discomfort( $data );
+
+    if ( $stopbrake_discomfort > 0 ) {
+        $reduce_value += $stopbrake_discomfort;
+        $discomfort_type->{stopbrake_flag} = '1';
+    }
+
     #TODO 急カーブの計算結果
-    $reduce_value += 0;
+    my $curve_discomfort = $class->_get_curve_discomfort( $data );
+
+    if ( $curve_discomfort > 0 ) {
+        $reduce_value += $curve_discomfort;
+        $discomfort_type->{curve_flag} = '1';
+    }
+
+    #TODO 蛇行運転の計算結果
 
     return {
         reduce_value    => $reduce_value,
@@ -41,24 +57,23 @@ sub get_reduce_value {
 }
 
 
-# 急加速度による不快指数を計算する
+# 急加速度による彼女不快指数を計算する
 sub _get_accela_discomfort {
     my ( $class, $data ) = @_;
 
     my $accela_discomfort = 0;
+    my $type;
     # 車両の前後G
     my $vehicle_g = $data->{ALgt} / config()->{accela_gravity};
-    my $is_brake = $data->{BrkIndcr};
-    my $type;
 
     # 加速度が閾値を超えていた場合
-    if ( abs( $vehicle_g ) > config()->{g_threshold} ) {
+    if ( abs( $vehicle_g ) > config()->{g_threshold_accela} ) {
         $accela_discomfort = config()->{reduce_value};
-        # ブレーキ中なのかどうかで急発進・急ブレーキを判定
-        if ( $is_brake == 1 ) {
+        # 加速度の正負で急発進・急ブレーキを判定
+        if ( $vehicle_g < 0 ) {
             $type = config()->{brake_flag};
-        } elsif ( $is_brake == 0 ) {
-            $type = config()->{jamp_start_flag};
+        } elsif ( $vehicle_g > 0 ) {
+            $type = config()->{jumpstart_flag};
         }
     }
 
@@ -66,6 +81,28 @@ sub _get_accela_discomfort {
         accela_discomfort => $accela_discomfort,
         accela_type       => $type,
     };
+}
+
+
+# 停車前のブレーキによる彼女不快指数を計算する
+sub _get_stopbrake_discomfort {
+    my ( $class, $data ) = @_;
+
+    my $stopbrake_discomfort = 0;
+    # 必要なデータを変数に格納
+    my $spd      = abs( $data->{Spd} );
+    my $algt     = $data->{ALgt};
+    my $is_brake = $data->{BrkIndcr}*1;
+    
+    if ( $is_brake == 1 ) {
+        if ( $spd < config()->{spd_threshold_stopbrake} 
+            && $algt < config()->{algt_threshold_stopbrake} ) {
+
+            $stopbrake_discomfort = config()->{reduce_value};
+        }
+    }
+
+    return $stopbrake_discomfort,
 }
 
 
