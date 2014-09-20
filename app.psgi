@@ -69,9 +69,10 @@ post '/vehicleinfo' => sub {
 
     return $c->render_json({
         discomfort => $discomfort,
+        type       => 'brake',
         is_stop    => $is_stop,
-        lat        => $position->{lat},
-        lon        => $position->{lon},
+        lat        => $position->{lat}.'',
+        lon        => $position->{lon}.'',
     });
 };
 

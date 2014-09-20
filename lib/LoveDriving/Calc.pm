@@ -2,6 +2,7 @@ package LoveDriving::Calc;
 use strict;
 use warnings;
 use Smart::Args;
+use LoveDriving::Base;
 use LoveDriving::KV;
 
 sub start {
@@ -34,6 +35,23 @@ sub get_discomfort {
     );
 
     return $total_discomfort;
+}
+
+
+sub _calc_discomfort {
+    my ($class, $content) = @_;
+
+    my $data = $class->_parse_data( $content );
+    my $reduce_value = 0;
+
+    my $brake_value = 0;
+
+    my $ALgt = $data->{ALgt};
+    my $vehicle_g = $ALgt / config()->{accela_gravity};
+
+    # 加速度が超えていた場合
+    if ( $vehicle_g < config()->{g_threshold} ) {
+    }
 }
 
 

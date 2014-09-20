@@ -22,7 +22,7 @@ sub vehicle_info {
         developerkey   => config()->{developer_key},
         responseformat => 'json',
         vid            => "ITCJP_$id",
-        infoids        => '[Posn,Spd,BrkIndcr]',
+        infoids        => '[Posn,Spd,ALgt,BrkIndcr]',
     ] );
     die $res->status_line unless $res->is_success;
     print Dumper decode_json($res->content);
