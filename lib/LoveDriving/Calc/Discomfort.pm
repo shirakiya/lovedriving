@@ -49,8 +49,13 @@ sub get_reduce_value {
         $discomfort_type->{curve_flag} = config()->{curve_flag};
     }
 
-    #TODO 蛇行運転の計算結果
+    #TODO 車線変更の計算結果
+    #my $lanechange_discomfort = $class->_get_lanechenge_discomfort( $data );
 
+    #if ( $lanechange_discomfort > 0 ) {
+    #    $reduce_value += $lanechange_discomfort;
+    #    $discomfort_type->{lanechange} = config()->{lanechange_flag};
+    #}
 
     # フラグの選択
     $discomfort_type = $class->_choice_flags( $discomfort_type );
@@ -117,8 +122,18 @@ sub _get_curve_discomfort {
 
     my $curve_discomfort = 0;
 
+    #計算ロジック
+
     return $curve_discomfort;
 }
+
+
+#TODO 車線変更による不快指数を計算する
+sub _get_lanechenge_discomfort {
+    my ( $class, $data ) = @_;
+    return;
+}
+
 
 # フラグの選択
 sub _choice_flags {
