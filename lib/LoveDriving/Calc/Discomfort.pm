@@ -5,7 +5,7 @@ use Smart::Args;
 use LoveDriving::Base;
 
 # 減算される彼女不快指数を取得する
-sub _get_reduce_value {
+sub get_reduce_value {
     args(
         my $class,
         my $data,
