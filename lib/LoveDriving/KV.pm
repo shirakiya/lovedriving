@@ -37,9 +37,12 @@ sub get_discomfort {
         my $id => 'Str',
     );
 
-    my $kv = unqlite()->kv_fetch( $id );
-
-    return $kv;
+    # UnQLiteにkeyが存在しない場合(startしていない場合)の処理
+    unless ( defined( unqlite()->kv_fetch( $id ) ) ) {
+        die 'db key not found';
+    }
+        
+    return unqlite()->kv_fetch( $id );
 }
 
 
