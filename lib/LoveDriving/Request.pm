@@ -21,8 +21,8 @@ sub vehicle_info {
     my $res = $furl->post( $url, $header, [
         developerkey   => config()->{developer_key},
         responseformat => 'json',
-        userid         => "ITCJP_USERID_$id",
-        infoids        => '[Spd,BrkIndcr]',
+        vid            => "ITCJP_$id",
+        infoids        => '[Posn,Spd,BrkIndcr]',
     ] );
     die $res->status_line unless $res->is_success;
     print Dumper decode_json($res->content);

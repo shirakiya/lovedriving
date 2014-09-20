@@ -22,18 +22,18 @@ sub get_discomfort {
         my $content,
     );
 
-    my $sum_discomfort = LoveDriving::KV->get_discomfort( id => $id );
+    my $total_discomfort = LoveDriving::KV->get_discomfort( id => $id );
 
     #TODO 不快指数の計算
     my $discomfort = 0; #仮実装
-    $sum_discomfort += $discomfort;
+    $total_discomfort -= $discomfort;
 
     my $is_save = LoveDriving::KV->save_discomfort(
         id         => $id,
-        discomfort => $sum_discomfort,
+        discomfort => $total_discomfort,
     );
 
-    return $sum_discomfort;
+    return $total_discomfort;
 }
 
 
@@ -53,6 +53,19 @@ sub get_is_stop {
     }
 
     return $is_stop;
+}
+
+
+sub parse_position {
+    args(
+        my $class,
+        my $content,
+    );
+
+    return {
+        lat => $class->_parse_data( $content )->{Posn}->{lat},
+        lon => $class->_parse_data( $content )->{Posn}->{lon},
+    };
 }
 
 

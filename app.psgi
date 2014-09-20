@@ -63,9 +63,15 @@ post '/vehicleinfo' => sub {
         content => $content,
     );
 
+    my $position = LoveDriving::Calc->parse_position(
+        content => $content,
+    );
+
     return $c->render_json({
         discomfort => $discomfort,
         is_stop    => $is_stop,
+        lat        => $position->{lat},
+        lon        => $position->{lon},
     });
 };
 
@@ -108,7 +114,7 @@ __DATA__
 <body>
     <div class="container">
         <section class="row">
-            <form method="post" action="[% uri_for('/end') %]">
+            <form method="post" action="[% uri_for('/vehicleinfo') %]">
                 <p>ID：<input type="text" id="id" name="id"></p>
                 <p><input type="submit" value="送信"></p>
             </form>

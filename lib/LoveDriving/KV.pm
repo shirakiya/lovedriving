@@ -10,25 +10,24 @@ sub start {
         my $class,
     );
 
-    my $user_id = '';
+    my $id = '';
     #一意なIDを与える
-    for my $id ( @{config()->{userid}} ) {
-        if ( defined( unqlite()->kv_fetch( $id ) ) ) {
+    for my $tmp_id ( @{config()->{vid}} ) {
+        if ( defined( unqlite()->kv_fetch( $tmp_id ) ) ) {
             next;
         } else {
-            $user_id = $id;
+            $id = $tmp_id;
             last;
         }
     }
 
     #不快指数の初期値100を与える
-    unqlite()->kv_store( $user_id, 100 );
+    unqlite()->kv_store( $id, 100 );
 
-    my $start_res = {
-        id => $user_id,
-        discomfort => unqlite()->kv_fetch( $user_id ),
+    return {
+        id         => $id,
+        discomfort => unqlite()->kv_fetch( $id ),
     };
-    return $start_res;
 }
 
 
@@ -37,7 +36,9 @@ sub get_discomfort {
         my $class,
         my $id => 'Str',
     );
-    my $kv = unqlite()->kv_fetch( $id ) // 0;
+
+    my $kv = unqlite()->kv_fetch( $id );
+
     return $kv;
 }
 
@@ -66,7 +67,7 @@ sub end {
     );
 
     my $result = {
-        is_end            => 0,
+        is_end     => 0,
         discomfort => unqlite()->kv_fetch( $id ),
     };
 
