@@ -38,7 +38,7 @@ post '/start' => sub {
     });
 };
 
-
+#TODO 完成したら削除する
 get '/' => sub {
     my $c = shift;
     return $c->render('index.tt');
@@ -74,10 +74,11 @@ post '/end' => sub {
     my $c = shift;
     my $id = $c->req->param('id');
 
-    my $is_end = LoveDriving::Calc->end( id => $id );
+    my $result = LoveDriving::Calc->end( id => $id );
 
     return $c->render_json({
-        is_end => $is_end,
+        is_end            => $result->{is_end},
+        result_discomfort => $result->{discomfort},
     });
 };
 
@@ -107,7 +108,7 @@ __DATA__
 <body>
     <div class="container">
         <section class="row">
-            <form method="post" action="[% uri_for('/vehicleinfo') %]">
+            <form method="post" action="[% uri_for('/end') %]">
                 <p>ID：<input type="text" id="id" name="id"></p>
                 <p><input type="submit" value="送信"></p>
             </form>

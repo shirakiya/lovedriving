@@ -54,7 +54,7 @@ sub save_discomfort {
         $is_save = 1;
     } catch {
         $is_save = 0;
-    }
+    };
     return $is_save;
 }
 
@@ -64,14 +64,20 @@ sub end {
         my $class,
         my $id => 'Str',
     );
-    my $is_end = 0;
+
+    my $result = {
+        is_end            => 0,
+        discomfort => unqlite()->kv_fetch( $id ),
+    };
+
     try {
         unqlite()->kv_delete( $id );
-        $is_end = 1;
+        $result->{is_end} = 1;
     } catch {
-        $is_end = 0;
-    }
-    return $is_end;
+        $result->{is_end} = 0;
+    };
+
+    return $result;
 }
 
 1;
