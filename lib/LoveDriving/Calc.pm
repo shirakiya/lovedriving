@@ -57,10 +57,10 @@ sub get_is_stop {
     my $data = $class->_parse_data( $content );
     my $spd = $data->{Spd};
 
-    my $is_stop = '0';
+    my $is_stop = 0;
     # 車速が1以下なら停止と見なす
     if ( $spd*1 <= 1 ) {
-        $is_stop = '1';
+        $is_stop = 1;
     }
 
     return $is_stop;

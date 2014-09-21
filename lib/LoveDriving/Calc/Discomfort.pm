@@ -99,20 +99,16 @@ sub _get_stopbrake_discomfort {
     my ( $class, $data ) = @_;
 
     my $stopbrake_discomfort = 0;
-    # 必要なデータを変数に格納
-    my $spd      = abs( $data->{Spd} );
-    my $algt     = $data->{ALgt};
-    my $is_brake = $data->{BrkIndcr}*1;
     
-    if ( $is_brake == 1 ) {
-        if ( $spd < config()->{spd_threshold_stopbrake} 
-            && $algt < config()->{algt_threshold_stopbrake} ) {
+    if ( $data->{BrkIndcr}*1 == 1 ) {
+        if ( abs( $data->{Spd} ) < config()->{spd_threshold_stopbrake} 
+            && $data->{ALgt} < config()->{algt_threshold_stopbrake} ) {
 
             $stopbrake_discomfort = config()->{reduce_value};
         }
     }
 
-    return $stopbrake_discomfort,
+    return $stopbrake_discomfort;
 }
 
 
@@ -122,7 +118,22 @@ sub _get_curve_discomfort {
 
     my $curve_discomfort = 0;
 
+    my $spd      = abs( $data->{Spd} );
+    my $alat     = $data->{ALat};
+    my $algt     = $data->{ALgt};
+    my $yawrate = abs( $data->{YawRate} );
+    my $steerag = abs( $data->{SteerAg} );
+ 
     #計算ロジック
+    if ( $data->{ALgt} > 0 ) {
+        if ( abs( $data->{YawRate} ) > config()->{threshold}->{curve}->{yawrate} ) {
+            if ( abs( $data->{SteerAg} ) < config()->{threshold}->{curve}->{steerag} ) {
+                if ( abs( $data->{alat} ) > config()->{threshold}->{curve}->{alat} ) {
+                    $curve_discomfort = config()->{reduce_value};
+                }
+            }
+        }
+    }
 
     return $curve_discomfort;
 }
