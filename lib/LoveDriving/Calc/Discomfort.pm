@@ -77,7 +77,7 @@ sub _get_accela_discomfort {
     my $vehicle_g = $data->{ALgt} / config()->{accela_gravity};
 
     # 加速度が閾値を超えていた場合
-    if ( abs( $vehicle_g ) > config()->{g_threshold_accela} ) {
+    if ( abs( $vehicle_g ) > config()->{threshold}->{accela}->{g} ) {
         $accela_discomfort = config()->{reduce_value};
         # 加速度の正負で急発進・急ブレーキを判定
         if ( $vehicle_g < 0 ) {
@@ -101,8 +101,8 @@ sub _get_stopbrake_discomfort {
     my $stopbrake_discomfort = 0;
     
     if ( $data->{BrkIndcr}*1 == 1 ) {
-        if ( abs( $data->{Spd} ) < config()->{spd_threshold_stopbrake} 
-            && $data->{ALgt} < config()->{algt_threshold_stopbrake} ) {
+        if ( abs( $data->{Spd} ) < config()->{threshold}->{stopbrake}->{spd} 
+            && $data->{ALgt} < config()->{threshold}->{stopbrake}->{algt} ) {
 
             $stopbrake_discomfort = config()->{reduce_value};
         }
