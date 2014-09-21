@@ -4,6 +4,7 @@ use warnings;
 use Smart::Args;
 use Try::Tiny;
 use LoveDriving::Base;
+use Data::Dumper;
 
 sub start {
     args(
@@ -20,9 +21,13 @@ sub start {
             last;
         }
     }
+    my $type_id  = $id . '_type';
+    my $times_id = $id . '_times';
 
-    #不快指数の初期値100を与える
+    # 初期値を与える
     unqlite()->kv_store( $id, 100 );
+    unqlite()->kv_store( $type_id, 0 );
+    unqlite()->kv_store( $times_id, 0 );
 
     return {
         id         => $id,
@@ -46,17 +51,43 @@ sub get_discomfort {
 }
 
 
-sub save_discomfort {
+sub get_type {
+    args(
+        my $class,
+        my $id => 'Str',
+    );
+    
+    return unqlite()->kv_fetch( $id.'_type' );
+}
+
+
+sub get_show_times {
+    args(
+        my $class,
+        my $id => 'Str',
+    );
+
+    return unqlite()->kv_fetch( $id.'_times' );
+}
+
+
+sub save {
     args(
         my $class,
         my $id         => 'Str',
         my $discomfort => 'Int',
+        my $type       => 'Int',
+        my $show_times => 'Int',
     );
 
     my $is_save = 0;
+    my $type_id  = $id . '_type';
+    my $times_id = $id . '_times';
 
     try {
         unqlite()->kv_store( $id, $discomfort );
+        unqlite()->kv_store( $type_id, $type );
+        unqlite()->kv_store( $times_id, $show_times );
         $is_save = 1;
     } catch {
         $is_save = 0;
