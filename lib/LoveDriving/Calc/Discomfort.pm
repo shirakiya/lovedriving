@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use Smart::Args;
 use LoveDriving::Base;
-use Data::Dumper;
 
 # 減算される彼女不快指数を取得する
 sub get_reduce_value {

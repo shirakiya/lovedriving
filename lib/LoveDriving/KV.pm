@@ -4,7 +4,6 @@ use warnings;
 use Smart::Args;
 use Try::Tiny;
 use LoveDriving::Base;
-use Data::Dumper;
 
 sub start {
     args(
