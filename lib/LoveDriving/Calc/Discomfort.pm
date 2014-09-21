@@ -26,10 +26,10 @@ sub get_reduce_value {
     if ( $accela_result->{accela_discomfort} > 0 ) {
         $reduce_value += $accela_result->{accela_discomfort};
 
-        if ( $accela_result->{accela_type} == config()->{brake_flag} ) {
-            $discomfort_type->{brake_flag} = config()->{brake_flag};
-        } elsif ( $accela_result->{accela_type} == config()->{jumpstart_flag} ) {
-            $discomfort_type->{jumpstart_flag} = config()->{jumpstart_flag};
+        if ( $accela_result->{accela_type} == config()->{flag}->{brake} ) {
+            $discomfort_type->{brake_flag} = config()->{flag}->{brake};
+        } elsif ( $accela_result->{accela_type} == config()->{flag}->{jumpstart} ) {
+            $discomfort_type->{jumpstart_flag} = config()->{flag}->{jumpstart};
         }
     }
 
@@ -38,15 +38,15 @@ sub get_reduce_value {
 
     if ( $stopbrake_discomfort > 0 ) {
         $reduce_value += $stopbrake_discomfort;
-        $discomfort_type->{stopbrake_flag} = config()->{stopbrake_flag};
+        $discomfort_type->{stopbrake_flag} = config()->{flag}->{stopbrake};
     }
 
-    #TODO 急カーブの計算結果
+    # 急カーブの計算結果
     my $curve_discomfort = $class->_get_curve_discomfort( $data );
 
     if ( $curve_discomfort > 0 ) {
         $reduce_value += $curve_discomfort;
-        $discomfort_type->{curve_flag} = config()->{curve_flag};
+        $discomfort_type->{curve_flag} = config()->{flag}->{curve};
     }
 
     #TODO 車線変更の計算結果
@@ -54,7 +54,7 @@ sub get_reduce_value {
 
     #if ( $lanechange_discomfort > 0 ) {
     #    $reduce_value += $lanechange_discomfort;
-    #    $discomfort_type->{lanechange} = config()->{lanechange_flag};
+    #    $discomfort_type->{lanechange} = config()->{flag}->{lanechange};
     #}
 
     # フラグの選択
@@ -81,9 +81,9 @@ sub _get_accela_discomfort {
         $accela_discomfort = config()->{reduce_value};
         # 加速度の正負で急発進・急ブレーキを判定
         if ( $vehicle_g < 0 ) {
-            $type = config()->{brake_flag};
+            $type = config()->{flag}->{brake};
         } elsif ( $vehicle_g > 0 ) {
-            $type = config()->{jumpstart_flag};
+            $type = config()->{flag}->{jumpstart};
         }
     }
 
