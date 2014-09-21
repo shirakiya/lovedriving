@@ -118,19 +118,11 @@ sub _get_curve_discomfort {
 
     my $curve_discomfort = 0;
 
-    my $spd      = abs( $data->{Spd} );
-    my $alat     = $data->{ALat};
-    my $algt     = $data->{ALgt};
-    my $yawrate = abs( $data->{YawRate} );
-    my $steerag = abs( $data->{SteerAg} );
- 
     #計算ロジック
-    if ( $data->{ALgt} > 0 ) {
-        if ( abs( $data->{YawRate} ) > config()->{threshold}->{curve}->{yawrate} ) {
-            if ( abs( $data->{SteerAg} ) < config()->{threshold}->{curve}->{steerag} ) {
-                if ( abs( $data->{alat} ) > config()->{threshold}->{curve}->{alat} ) {
-                    $curve_discomfort = config()->{reduce_value};
-                }
+    if ( $data->{Spd} > config()->{threshold}->{curve}->{spd} ) {
+        if ( $data->{ALgt} > 0 ) {
+            if ( abs( $data->{YawRate} ) > config()->{threshold}->{curve}->{yawrate} ) {
+                $curve_discomfort = config()->{reduce_value};
             }
         }
     }
